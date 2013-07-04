@@ -26,6 +26,7 @@ public class BoardSettings {
     private String throttleURL;
     private Long throttleMillisec;
     private List<PageSettings> pageSettings;
+    private GeneralSettings generalSettings;
 
     public String getEngine() {
         return engine;
@@ -145,6 +146,14 @@ public class BoardSettings {
 
     public void setPageSettings(List<PageSettings> pageSettings) {
         this.pageSettings = pageSettings;
+    }
+
+    public GeneralSettings getGeneralSettings() {
+        return generalSettings;
+    }
+
+    public void setGeneralSettings(GeneralSettings generalSettings) {
+        this.generalSettings = generalSettings;
     }
 
     public Integer getDeletedThreadsThresholdPage() {

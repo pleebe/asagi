@@ -30,6 +30,8 @@ public class PostJson {
     private boolean filedeleted;
     private boolean spoiler;
     private int customSpoiler;
+    private int replies;
+    private int images;
     private int omittedPosts;
     private int omittedImages;
 
@@ -255,6 +257,22 @@ public class PostJson {
 
     public void setCustomSpoiler(int customSpoiler) {
         this.customSpoiler = customSpoiler;
+    }
+
+    public int getReplies() {
+        return replies;
+    }
+
+    public void setReplies(int replies) {
+        this.replies = replies;
+    }
+
+    public int getImages() {
+        return images;
+    }
+
+    public void setImages(int images) {
+        this.images = images;
     }
 
     public int getOmittedPosts() {
