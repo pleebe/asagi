@@ -1,7 +1,5 @@
 package net.easymodo.asagi;
 
-import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,11 +7,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.gson.*;
-import net.easymodo.asagi.model.MediaPost;
 import net.easymodo.asagi.model.Page;
 import net.easymodo.asagi.model.Post;
 import net.easymodo.asagi.model.Topic;
 import net.easymodo.asagi.settings.BoardSettings;
+import net.easymodo.asagi.settings.RegexSettings;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -22,26 +20,26 @@ import org.apache.http.annotation.ThreadSafe;
 import net.easymodo.asagi.exception.ContentGetException;
 import net.easymodo.asagi.exception.ContentParseException;
 import net.easymodo.asagi.model.yotsuba.*;
-import net.easymodo.asagi.settings.GeneralSettings;
 
 @ThreadSafe
-public class YotsubaJSONGeneral extends Yotsuba {
+public class YotsubaREGEX extends Yotsuba {
     private static boolean processSubjectPattern = false;
     private static boolean processCommentPattern = false;
+    private static boolean processMediaHashPattern = false;
     private static Pattern genSubjectPattern;
     private static Pattern genCommentPattern;
-    private static String genMediaHash;
+    private static Pattern genMediaHashPattern;
 
-    public YotsubaJSONGeneral(String boardName, BoardSettings settings) {
-        boardLinks = YotsubaJSONGeneral.getBoardLinks(boardName);
+    public YotsubaREGEX(String boardName, BoardSettings settings) {
+        boardLinks = YotsubaREGEX.getBoardLinks(boardName);
         this.throttleAPI = settings.getThrottleAPI();
         this.throttleURL = settings.getThrottleURL();
         this.throttleMillisec = settings.getThrottleMillisec();
 
-        GeneralSettings genSet = settings.getGeneralSettings();
-        String genSubjectString = genSet.getSubject();
-        String genCommentString = genSet.getComment();
-        genMediaHash = genSet.getMediaHash();
+        RegexSettings regexSet = settings.getRegexSettings();
+        String genSubjectString = regexSet.getSubject();
+        String genCommentString = regexSet.getComment();
+        String genMediaHashString = regexSet.getMediaHash();
 
         if (genSubjectString != null && !genSubjectString.equals("")) {
             genSubjectPattern = Pattern.compile(genSubjectString, Pattern.COMMENTS | Pattern.DOTALL);
@@ -51,6 +49,11 @@ public class YotsubaJSONGeneral extends Yotsuba {
         if (genCommentString != null && !genCommentString.equals("")) {
             genCommentPattern = Pattern.compile(genCommentString, Pattern.COMMENTS | Pattern.DOTALL);
             processCommentPattern = true;
+        }
+
+        if (genMediaHashString != null && !genMediaHashString.equals("")) {
+            genMediaHashPattern = Pattern.compile(genMediaHashString, Pattern.COMMENTS | Pattern.DOTALL);
+            processMediaHashPattern = true;
         }
     }
 
@@ -164,20 +167,20 @@ public class YotsubaJSONGeneral extends Yotsuba {
             for (PostJson post : page.getThreads()) {
                 boolean processTopic = false;
 
-                if (processSubjectPattern && post.getSub() != null)
-                {
+                if (processSubjectPattern && post.getSub() != null) {
                     Matcher topicSubject = genSubjectPattern.matcher(post.getSub());
                     if (topicSubject.find()) processTopic = true;
                 }
 
-                if (processCommentPattern && post.getCom() != null)
-                {
+                if (processCommentPattern && post.getCom() != null) {
                     Matcher topicComment = genCommentPattern.matcher(post.getCom());
                     if (topicComment.find()) processTopic = true;
                 }
 
-                if (post.getMd5() != null && post.getMd5().equals(genMediaHash) && !post.getMd5().equals(""))
-                    processTopic = true;
+                if (processMediaHashPattern && post.getMd5() != null) {
+                    Matcher topicMediaHash = genMediaHashPattern.matcher(post.getMd5());
+                    if (topicMediaHash.find()) processTopic = true;
+                }
 
                 if (processTopic) {
                     Topic t = new Topic(post.getNo(), 0, 0);

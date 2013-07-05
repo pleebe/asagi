@@ -26,7 +26,7 @@ public class BoardSettings {
     private String throttleURL;
     private Long throttleMillisec;
     private List<PageSettings> pageSettings;
-    private GeneralSettings generalSettings;
+    private RegexSettings regexSettings;
 
     public String getEngine() {
         return engine;
@@ -148,12 +148,12 @@ public class BoardSettings {
         this.pageSettings = pageSettings;
     }
 
-    public GeneralSettings getGeneralSettings() {
-        return generalSettings;
+    public RegexSettings getRegexSettings() {
+        return regexSettings;
     }
 
-    public void setGeneralSettings(GeneralSettings generalSettings) {
-        this.generalSettings = generalSettings;
+    public void setRegexSettings(RegexSettings regexSettings) {
+        this.regexSettings = regexSettings;
     }
 
     public Integer getDeletedThreadsThresholdPage() {

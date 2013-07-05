@@ -3,7 +3,7 @@ package net.easymodo.asagi.settings;
 import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
-public class GeneralSettings {
+public class RegexSettings {
     private String subject;
     private String comment;
     private String mediaHash;
