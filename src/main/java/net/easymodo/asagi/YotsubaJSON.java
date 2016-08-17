@@ -203,6 +203,7 @@ public class YotsubaJSON extends YotsubaAbstract {
         p.setPosterHash(posterHash);
         p.setPosterCountry(posterCountry);
         p.setExif(this.cleanSimple(this.parseMeta(pj.getCom())));
+        p.setUnique_ips(pj.getUnique_ips());
 
         return p;
     }

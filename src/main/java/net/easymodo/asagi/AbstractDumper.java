@@ -1,10 +1,7 @@
 package net.easymodo.asagi;
 
 import net.easymodo.asagi.exception.*;
-import net.easymodo.asagi.model.DeletedPost;
-import net.easymodo.asagi.model.MediaPost;
-import net.easymodo.asagi.model.Post;
-import net.easymodo.asagi.model.Topic;
+import net.easymodo.asagi.model.*;
 import net.easymodo.asagi.settings.BoardSettings;
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
@@ -30,6 +27,7 @@ public abstract class AbstractDumper {
     private final BlockingQueue<MediaPost> mediaPreviewUpdates;
     private final BlockingQueue<MediaPost> mediaUpdates;
     private final BlockingQueue<DeletedPost> deletedPosts;
+    private final BlockingQueue<UpdateIPs> ipUpdatedPosts;
 
     protected final BlockingQueue<Topic> topicUpdates;
     protected final Board sourceBoard;
@@ -52,6 +50,7 @@ public abstract class AbstractDumper {
         this.mediaUpdates = new LinkedBlockingQueue<MediaPost>();
         this.topicUpdates = new LinkedBlockingQueue<Topic>();
         this.deletedPosts = new LinkedBlockingQueue<DeletedPost>();
+        this.ipUpdatedPosts = new LinkedBlockingQueue<UpdateIPs>();
         this.newTopics = new LinkedBlockingQueue<Integer>();
         this.fullThumb = fullThumb;
         this.fullMedia = fullMedia;
@@ -98,6 +97,7 @@ public abstract class AbstractDumper {
         ThreadUtils.initThread(boardName, new TopicFetcher(), "Topic fetcher", boardSettings.getNewThreadsThreads());
         ThreadUtils.initThread(boardName, new TopicInserter(), "Topic inserter", 1);
         ThreadUtils.initThread(boardName, new PostDeleter(), "Post deleter", 1);
+        ThreadUtils.initThread(boardName, new IPUpdater(), "IP updater", 1);
     }
 
     protected boolean findDeleted(Topic oldTopic, Topic newTopic, boolean markDeleted) {
@@ -231,6 +231,12 @@ public abstract class AbstractDumper {
                         debug(TALK, newTopic.getNum() + ": archived");
                         topics.remove(newTopic.getNum());
                     }
+
+                    if(post.getUnique_ips()>0) {
+                        UpdateIPs ippost = new UpdateIPs(post.getThreadNum(), post.getUnique_ips());
+                        if(!ipUpdatedPosts.contains(ippost))
+                            ipUpdatedPosts.add(ippost);
+                    }
                 }
                 newTopic.purgePosts();
                 newTopic.lock.writeLock().unlock();
@@ -254,6 +260,27 @@ public abstract class AbstractDumper {
                 } catch(ContentStoreException e) {
                     debug(ERROR, "Couldn't update deleted status of post " +
                             deletedPost + ": " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    protected class IPUpdater implements Runnable {
+        @Override
+        @SuppressWarnings("InfiniteLoopStatement")
+        public void run() {
+            while(true) {
+                UpdateIPs post;
+
+                try {
+                    post = ipUpdatedPosts.take();
+                } catch(InterruptedException e) { continue; }
+
+                try {
+                    topicLocalBoard.updateIP(post);
+                } catch(ContentStoreException e) {
+                    debug(ERROR, "Couldn't update IP count of thread " +
+                            post.getNum() + ": " + e.getMessage());
                 }
             }
         }

@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS "%%BOARD%%_threads" (
   "time_last_modified" int unsigned NOT NULL,
   "nreplies" int unsigned NOT NULL DEFAULT '0',
   "nimages" int unsigned NOT NULL DEFAULT '0',
+  "unique_ips" int unsigned NOT NULL DEFAULT '0',
   "sticky" bool NOT NULL DEFAULT '0',
   "locked" bool NOT NULL DEFAULT '0',
 

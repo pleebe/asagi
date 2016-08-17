@@ -36,6 +36,7 @@ public class YotsubaHTML extends YotsubaAbstract {
     private static final Pattern omittedPattern;
     private static final Pattern omPostsPattern;
     private static final Pattern omImagesPattern;
+    private static final Pattern unqIPPattern;
 
     static {
         Map<String, Integer> sizeMuls = new HashMap<String,Integer>();
@@ -72,6 +73,7 @@ public class YotsubaHTML extends YotsubaAbstract {
         String omittedPatString = "<span \\s class=\"abbr\">Comment \\s too \\s long";
         String omPostsPatString = "<span \\s class=\"info\">\\s*<strong>(\\d*) \\s posts \\s omitted";
         String omImagesPatString = "<em>\\((\\d*) \\s have \\s images\\)</em>";
+        String unqIPPatString = "<script \\s type=\"text/javascript\">[^<]*?var \\s unique_ips \\s = \\s (\\d+);.*?</script>";
 
         numPattern = Pattern.compile(numPatString, Pattern.COMMENTS | Pattern.DOTALL);
         titlePattern = Pattern.compile(titlePatString, Pattern.COMMENTS | Pattern.DOTALL);
@@ -84,6 +86,7 @@ public class YotsubaHTML extends YotsubaAbstract {
         omittedPattern = Pattern.compile(omittedPatString, Pattern.COMMENTS | Pattern.DOTALL);
         omPostsPattern = Pattern.compile(omPostsPatString, Pattern.COMMENTS | Pattern.DOTALL);
         omImagesPattern = Pattern.compile(omImagesPatString, Pattern.COMMENTS | Pattern.DOTALL);
+        unqIPPattern = Pattern.compile(unqIPPatString, Pattern.COMMENTS | Pattern.DOTALL);
     }
 
     public YotsubaHTML(String boardName, BoardSettings settings) {
@@ -118,7 +121,7 @@ public class YotsubaHTML extends YotsubaAbstract {
             String filesize, int width, int height, String filename, int tWidth,
             int tHeight, String md5, int num, String title, String email,
             String name, String trip, String capcode, long dateUtc, boolean sticky, boolean closed,
-            String comment, boolean omitted, int threadNum, String posterHash, String posterCountry) throws ContentParseException
+            String comment, boolean omitted, int threadNum, String posterHash, String posterCountry, int unique_ips) throws ContentParseException
     {
         String type = "";
         String previewOrig = null;
@@ -191,6 +194,7 @@ public class YotsubaHTML extends YotsubaAbstract {
         post.setPosterHash(posterHash);
         post.setPosterCountry(posterCountry);
         post.setOmitted(omitted);
+        post.setUnique_ips(unique_ips);
 
         return post;
     }
@@ -299,9 +303,12 @@ public class YotsubaHTML extends YotsubaAbstract {
         mat = omittedPattern.matcher(text);
         if(mat.find()) omitted  = true;
 
+        mat = unqIPPattern.matcher(text);
+        int unique_ips = Integer.parseInt(mat.group(1));
+
         return this.newYotsubaPost(link, null, spoiler, fileSize, width,
                 height, fileName, tWidth, tHeight, md5b64, num, title, email,
-                name, trip, capcode, dateUtc, sticky, closed, comment, omitted, threadNum, uid, country);
+                name, trip, capcode, dateUtc, sticky, closed, comment, omitted, threadNum, uid, country, unique_ips);
     }
 
     public String linkPage(int pageNum) {

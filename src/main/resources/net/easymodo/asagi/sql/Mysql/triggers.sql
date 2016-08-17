@@ -52,7 +52,7 @@ DROP PROCEDURE IF EXISTS "create_thread_%%BOARD%%";
 CREATE PROCEDURE "create_thread_%%BOARD%%" (num INT, timestamp INT)
 BEGIN
   INSERT IGNORE INTO "%%BOARD%%_threads" VALUES (num, timestamp, timestamp,
-    timestamp, NULL, NULL, timestamp, 0, 0, 0, 0);
+    timestamp, NULL, NULL, timestamp, 0, 0, 0, 0, 0);
 END;
 
 DROP PROCEDURE IF EXISTS "delete_thread_%%BOARD%%";

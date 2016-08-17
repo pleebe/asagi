@@ -35,6 +35,7 @@ public class Post {
     private String link;
     private String type;
     private boolean omitted;
+    private int unique_ips;
 
     public int getPosterIp() {
         return posterIp;
@@ -306,5 +307,11 @@ public class Post {
 
     public void setOmitted(boolean omitted) {
         this.omitted = omitted;
+    }
+
+    public int getUnique_ips() { return unique_ips; }
+
+    public void setUnique_ips(int unique_ips) {
+        this.unique_ips = unique_ips;
     }
 }

@@ -33,6 +33,7 @@ public class PostJson {
     private int customSpoiler;
     private int omittedPosts;
     private int omittedImages;
+    private int unique_ips;
 
     public int getNo() {
         return no;
@@ -280,5 +281,11 @@ public class PostJson {
 
     public void setOmittedImages(int omittedImages) {
         this.omittedImages = omittedImages;
+    }
+
+    public int getUnique_ips() { return unique_ips; }
+
+    public void setUnique_ips(int unique_ips) {
+        this.unique_ips = unique_ips;
     }
 }

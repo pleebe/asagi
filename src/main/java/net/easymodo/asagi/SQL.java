@@ -28,6 +28,7 @@ public abstract class SQL implements DB {
     protected String updateMediaQuery = null;
     protected String updatePreviewOpQuery = null;
     protected String updatePreviewReplyQuery = null;
+    protected String updateIPQuery = null;
 
     protected Connection conn = null;
     protected PreparedStatement tableChkStmt = null;
@@ -38,6 +39,7 @@ public abstract class SQL implements DB {
     protected PreparedStatement updateMediaStmt = null;
     protected PreparedStatement updatePreviewOpStmt = null;
     protected PreparedStatement updatePreviewReplyStmt = null;
+    protected PreparedStatement updateIPStmt = null;
 
     protected String commonSqlRes = null;
     protected String boardSqlRes = null;
@@ -64,6 +66,7 @@ public abstract class SQL implements DB {
         updateMediaStmt = conn.prepareStatement(updateMediaQuery);
         updatePreviewOpStmt = conn.prepareStatement(updatePreviewOpQuery);
         updatePreviewReplyStmt = conn.prepareStatement(updatePreviewReplyQuery);
+        updateIPStmt = conn.prepareStatement(updateIPQuery);
     }
 
     public synchronized void init(String connStr, String path, BoardSettings info) throws BoardInitException {
@@ -100,6 +103,8 @@ public abstract class SQL implements DB {
         this.updatePreviewOpQuery = String.format("UPDATE \"%s_images\" SET preview_op = ? WHERE media_hash = ?",
                 this.table);
         this.updatePreviewReplyQuery = String.format("UPDATE \"%s_images\" SET preview_reply = ? WHERE media_hash = ?",
+                this.table);
+        this.updateIPQuery = String.format("UPDATE \"%s_threads\" SET unique_ips = ? WHERE thread_num = ?",
                 this.table);
 
         try {
@@ -270,6 +275,26 @@ public abstract class SQL implements DB {
             updateDeletedStmt.setInt(3, post.getNum());
             updateDeletedStmt.setInt(4, 0);
             updateDeletedStmt.execute();
+            conn.commit();
+            break;
+        } catch(SQLRecoverableException e) {
+            this.reconnect();
+        } catch(SQLException e) {
+            try {
+                conn.rollback();
+            } catch(SQLException e1) {
+                e1.setNextException(e);
+                throw new ContentStoreException(e1);
+            }
+            throw new ContentStoreException(e);
+        } }
+    }
+
+    public synchronized void updateIP(UpdateIPs post) throws ContentStoreException, DBConnectionException {
+        while(true) { try {
+            updateIPStmt.setInt(1, post.getUnique_ips());
+            updateIPStmt.setInt(2, post.getNum());
+            updateIPStmt.execute();
             conn.commit();
             break;
         } catch(SQLRecoverableException e) {

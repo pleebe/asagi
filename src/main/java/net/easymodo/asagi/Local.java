@@ -187,6 +187,14 @@ public class Local extends Board {
         }
     }
 
+    public void updateIP(UpdateIPs post) throws ContentStoreException {
+        try{
+            this.db.updateIP(post);
+        } catch(DBConnectionException e) {
+            throw new ContentStoreException("Lost connection to database, can't reconnect", e);
+        }
+    }
+
     public void insertMediaPreview(MediaPost h, Board source) throws ContentGetException, ContentStoreException {
         this.insertMedia(h, source, true);
     }

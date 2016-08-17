@@ -8,6 +8,7 @@ import net.easymodo.asagi.model.DeletedPost;
 import net.easymodo.asagi.model.Media;
 import net.easymodo.asagi.model.MediaPost;
 import net.easymodo.asagi.model.Topic;
+import net.easymodo.asagi.model.UpdateIPs;
 import net.easymodo.asagi.settings.BoardSettings;
 
 public interface DB {
@@ -15,4 +16,5 @@ public interface DB {
     void insert(Topic topic) throws ContentStoreException, DBConnectionException;
     Media getMedia(MediaPost h) throws ContentGetException, ContentStoreException, DBConnectionException;
     void markDeleted(DeletedPost post) throws ContentStoreException, DBConnectionException;
+    void updateIP(UpdateIPs post) throws ContentStoreException, DBConnectionException;
 }
