@@ -170,7 +170,13 @@ public class YotsubaJSON extends YotsubaAbstract {
         }
 
         String capcode = pj.getCapcode();
-        if(capcode != null) capcode = capcode.substring(0, 1).toUpperCase();
+        if (capcode != null) {
+            if (capcode.equals("manager") || capcode.equals("Manager")) {
+                capcode = "G";
+            } else {
+                capcode = capcode.substring(0, 1).toUpperCase();
+            }
+        }
 
         String posterHash = pj.getId();
         if(posterHash != null && posterHash.equals("Developer")) posterHash = "Dev";
