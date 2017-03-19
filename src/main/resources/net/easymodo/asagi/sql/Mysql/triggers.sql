@@ -93,75 +93,6 @@ BEGIN
   UPDATE "%%BOARD%%_images" SET total = (total - 1) WHERE media_id = n_media_id;
 END;
 
-DROP PROCEDURE IF EXISTS "insert_post_%%BOARD%%";
-
-CREATE PROCEDURE "insert_post_%%BOARD%%" (p_timestamp INT, p_media_hash VARCHAR(25),
-  p_email VARCHAR(100), p_name VARCHAR(100), p_trip VARCHAR(25))
-BEGIN
-  DECLARE d_day INT;
-  DECLARE d_image INT;
-  DECLARE d_sage INT;
-  DECLARE d_anon INT;
-  DECLARE d_trip INT;
-  DECLARE d_name INT;
-
-  SET d_day = FLOOR(p_timestamp/86400)*86400;
-  SET d_image = p_media_hash IS NOT NULL;
-  SET d_sage = COALESCE(p_email = 'sage', 0);
-  SET d_anon = COALESCE(p_name = 'Anonymous' AND p_trip IS NULL, 0);
-  SET d_trip = p_trip IS NOT NULL;
-  SET d_name = COALESCE(p_name <> 'Anonymous' AND p_trip IS NULL, 1);
-
-  INSERT INTO "%%BOARD%%_daily" VALUES(d_day, 1, d_image, d_sage, d_anon, d_trip,
-    d_name)
-    ON DUPLICATE KEY UPDATE posts=posts+1, images=images+d_image,
-    sage=sage+d_sage, anons=anons+d_anon, trips=trips+d_trip,
-    names=names+d_name;
-
-  IF (SELECT trip FROM "%%BOARD%%_users" WHERE trip = p_trip) IS NOT NULL THEN
-    UPDATE "%%BOARD%%_users" SET postcount=postcount+1,
-        firstseen = LEAST(p_timestamp, firstseen),
-        name = COALESCE(p_name, '')
-      WHERE trip = p_trip;
-  ELSE
-    INSERT INTO "%%BOARD%%_users" VALUES(
-    NULL, COALESCE(p_name,''), COALESCE(p_trip,''), p_timestamp, 1)
-    ON DUPLICATE KEY UPDATE postcount=postcount+1,
-      firstseen = LEAST(VALUES(firstseen), firstseen),
-      name = COALESCE(p_name, '');
-  END IF;
-END;
-
-DROP PROCEDURE IF EXISTS "delete_post_%%BOARD%%";
-
-CREATE PROCEDURE "delete_post_%%BOARD%%" (p_timestamp INT, p_media_hash VARCHAR(25), p_email VARCHAR(100), p_name VARCHAR(100), p_trip VARCHAR(25))
-BEGIN
-  DECLARE d_day INT;
-  DECLARE d_image INT;
-  DECLARE d_sage INT;
-  DECLARE d_anon INT;
-  DECLARE d_trip INT;
-  DECLARE d_name INT;
-
-  SET d_day = FLOOR(p_timestamp/86400)*86400;
-  SET d_image = p_media_hash IS NOT NULL;
-  SET d_sage = COALESCE(p_email = 'sage', 0);
-  SET d_anon = COALESCE(p_name = 'Anonymous' AND p_trip IS NULL, 0);
-  SET d_trip = p_trip IS NOT NULL;
-  SET d_name = COALESCE(p_name <> 'Anonymous' AND p_trip IS NULL, 1);
-
-  UPDATE "%%BOARD%%_daily" SET posts=posts-1, images=images-d_image,
-    sage=sage-d_sage, anons=anons-d_anon, trips=trips-d_trip,
-    names=names-d_name WHERE day = d_day;
-
-  IF (SELECT trip FROM "%%BOARD%%_users" WHERE trip = p_trip) IS NOT NULL THEN
-    UPDATE "%%BOARD%%_users" SET postcount = postcount-1 WHERE trip = p_trip;
-  ELSE
-    UPDATE "%%BOARD%%_users" SET postcount = postcount-1 WHERE
-      name = COALESCE(p_name, '') AND trip = COALESCE(p_trip, '');
-  END IF;
-END;
-
 DROP TRIGGER IF EXISTS "before_ins_%%BOARD%%";
 
 CREATE TRIGGER "before_ins_%%BOARD%%" BEFORE INSERT ON "%%BOARD%%"
@@ -182,7 +113,6 @@ BEGIN
     CALL create_thread_%%BOARD%%(NEW.num, NEW.timestamp);
   END IF;
   CALL update_thread_%%BOARD%%(NEW.thread_num);
-  CALL insert_post_%%BOARD%%(NEW.timestamp, NEW.media_hash, NEW.email, NEW.name, NEW.trip);
 END;
 
 DROP TRIGGER IF EXISTS "after_del_%%BOARD%%";
@@ -194,7 +124,6 @@ BEGIN
   IF OLD.op = 1 THEN
     CALL delete_thread_%%BOARD%%(OLD.num);
   END IF;
-  CALL delete_post_%%BOARD%%(OLD.timestamp, OLD.media_hash, OLD.email, OLD.name, OLD.trip);
   IF OLD.media_hash IS NOT NULL THEN
     CALL delete_image_%%BOARD%%(OLD.media_id);
   END IF;
