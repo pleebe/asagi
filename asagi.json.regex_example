@@ -1,0 +1,41 @@
+{"settings": {
+  "dumperEngine": "DumperJSON",
+  "sourceEngine": "YotsubaREGEX",
+
+  "boardSettings": {
+    "default": {
+      "engine": "Mysql",
+      "database": "archive",
+      "host": "localhost",
+      "username": "root",
+      "password": "1234",
+      "charset": "utf8mb4",
+      "path": "/Users/eksi/asagi/",
+      "useOldDirectoryStructure": false,
+      "webserverGroup": "_www",
+      "thumbThreads": 5,
+      "mediaThreads": 0,
+      "newThreadsThreads": 5,
+      "deletedThreadsThresholdPage": 8,
+      "refreshDelay": 15,
+      "throttleAPI": true,
+      "throttleURL": "api.4chan.org",
+      "throttleMillisec": 1100,
+
+      "threadRefreshRate": 3,
+      "pageSettings": [
+        {"delay": 30, "pages": [0, 1]},
+        {"delay": 500, "pages": [2, 3, 4, 5, 6, 7, 8]},
+        {"delay": 30, "pages": [9, 10]}
+      ]
+    },
+
+    "a": {
+        "regexSettings": {
+            "subject": "loli",
+            "comment": "loli",
+            "mediaHash":"jDKfrE4oVGGXAq9LLyf\\+bQ=="
+        }
+    }
+  }
+}}
