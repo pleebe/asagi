@@ -5,6 +5,8 @@ public class Post {
     private int num;
     private int subnum;
     private int threadNum;
+    private int uniqueIps;
+    private int since4pass;
     private boolean op;
     private long date;
     private String previewOrig;
@@ -31,6 +33,7 @@ public class Post {
     private boolean archived;
     private String posterHash;
     private String posterCountry;
+    private String posterTrollCountry;
     private String exif;
     private String link;
     private String type;
@@ -62,6 +65,22 @@ public class Post {
 
     public int getThreadNum() {
         return threadNum;
+    }
+
+    public void setUniqueIps(int uniqueIps) {
+        this.uniqueIps = uniqueIps;
+    }
+
+    public int getUniqueIps() {
+        return uniqueIps;
+    }
+
+    public void setSince4pass(int since4pass) {
+        this.since4pass = since4pass;
+    }
+
+    public int getSince4pass() {
+        return since4pass;
     }
 
     public void setThreadNum(int threadNum) {
@@ -266,6 +285,14 @@ public class Post {
 
     public void setPosterCountry(String posterCountry) {
         this.posterCountry = posterCountry;
+    }
+
+    public String getPosterTrollCountry() {
+        return posterTrollCountry;
+    }
+
+    public void setPosterTrollCountry(String posterTrollCountry) {
+        this.posterTrollCountry = posterTrollCountry;
     }
 
     public String getExif() {

@@ -4,6 +4,8 @@ package net.easymodo.asagi.model.yotsuba;
 public class PostJson {
     private int no;
     private int resto;
+    private int uniqueIps;
+    private int since4pass;
     private boolean sticky;
     private boolean closed;
     private boolean archived;
@@ -15,6 +17,7 @@ public class PostJson {
     private String capcode;
     private String country;
     private String countryName;
+    private String trollCountry;
     private String email;
     private String sub;
     private String com;
@@ -48,6 +51,22 @@ public class PostJson {
 
     public void setResto(int resto) {
         this.resto = resto;
+    }
+
+    public int getUniqueIps() {
+        return uniqueIps;
+    }
+
+    public void setUniqueIps(int uniqueIps) {
+        this.uniqueIps = uniqueIps;
+    }
+
+    public int getSince4pass() {
+        return since4pass;
+    }
+
+    public void setSince4pass(int since4pass) {
+        this.since4pass = since4pass;
     }
 
     public boolean isSticky() {
@@ -136,6 +155,14 @@ public class PostJson {
 
     public void setCountryName(String countryName) {
         this.countryName = countryName;
+    }
+
+    public String getTrollCountry() {
+        return trollCountry;
+    }
+
+    public void setTrollCountry(String trollCountry) {
+        this.trollCountry = trollCountry;
     }
 
     public String getEmail() {

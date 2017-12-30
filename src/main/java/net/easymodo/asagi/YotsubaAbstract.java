@@ -129,37 +129,52 @@ public abstract class YotsubaAbstract extends WWW {
     }
 
     public String parseMeta(String text) {
-        if(text == null) return null;
+        return this.parseMeta(text, null, null, null);
+    }
 
-        Matcher exif = exifPattern.matcher(text);
+    public String parseMeta(String text, Integer uniqueIps, Integer since4pass, String trollCountry) {
+        if (text == null && uniqueIps == null && since4pass == null && trollCountry == null) return null;
 
-        if(exif.find()) {
-            String data = exif.group(1);
-            // remove empty rows
-            data = data.replaceAll("<tr><td colspan=\"2\"></td></tr><tr>", "");
+        Map<String, String> exifJson = new HashMap<String, String>();
+        if (text != null) {
+            Matcher exif = exifPattern.matcher(text);
 
-            Map<String, String> exifJson = new HashMap<String, String>();
-            Matcher exifData = exifDataPattern.matcher(data);
+            if (exif.find()) {
+                String data = exif.group(1);
+                // remove empty rows
+                data = data.replaceAll("<tr><td colspan=\"2\"></td></tr><tr>", "");
 
-            while(exifData.find()) {
-                String key = exifData.group(1);
-                String val = exifData.group(2);
-                exifJson.put(key, val);
+                Matcher exifData = exifDataPattern.matcher(data);
+
+                while (exifData.find()) {
+                    String key = exifData.group(1);
+                    String val = exifData.group(2);
+                    exifJson.put(key, val);
+                }
             }
 
-            if(exifJson.size() > 0)
-                return GSON.toJson(exifJson);
+            Matcher draw = drawPattern.matcher(text);
+            if (draw.find()) {
+                exifJson.put("Time", draw.group(1));
+                exifJson.put("Painter", draw.group(2));
+                exifJson.put("Source", draw.group(3) != null ? this.doClean(draw.group(3)) : null);
+            }
         }
 
-        Matcher draw = drawPattern.matcher(text);
-        if (draw.find()) {
-            Map<String, String> drawJson = new HashMap<String, String>();
-            drawJson.put("Time", draw.group(1));
-            drawJson.put("Painter", draw.group(2));
-            drawJson.put("Source", draw.group(3) != null ? this.doClean(draw.group(3)) : null);
-
-            return GSON.toJson(drawJson);
+        if (uniqueIps != null && uniqueIps != 0) {
+            exifJson.put("uniqueIps", Integer.toString(uniqueIps));
         }
+
+        if (since4pass != null && since4pass != 0) {
+            exifJson.put("since4pass", Integer.toString(since4pass));
+        }
+
+        if (trollCountry != null && !trollCountry.isEmpty()) {
+            exifJson.put("trollCountry", trollCountry);
+        }
+
+        if (exifJson.size() > 0)
+            return GSON.toJson(exifJson);
 
         return null;
     }
