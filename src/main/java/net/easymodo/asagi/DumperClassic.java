@@ -1,5 +1,6 @@
 package net.easymodo.asagi;
 
+import net.easymodo.asagi.exception.CfBicClearParseException;
 import net.easymodo.asagi.exception.ContentGetException;
 import net.easymodo.asagi.exception.ContentParseException;
 import net.easymodo.asagi.exception.HttpGetException;
@@ -68,6 +69,9 @@ public class DumperClassic extends AbstractDumper {
                         debug(WARN, "page " + pageNo + ": " + e.getMessage());
                         continue;
                     } catch(ContentParseException e) {
+                        debug(WARN, "page " + pageNo + ": " + e.getMessage());
+                        continue;
+                    } catch(CfBicClearParseException e) {
                         debug(WARN, "page " + pageNo + ": " + e.getMessage());
                         continue;
                     }

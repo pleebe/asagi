@@ -1,6 +1,7 @@
 package net.easymodo.asagi;
 
 import com.google.gson.JsonSyntaxException;
+import net.easymodo.asagi.exception.CfBicClearParseException;
 import net.easymodo.asagi.exception.ContentGetException;
 import net.easymodo.asagi.exception.ContentParseException;
 import net.easymodo.asagi.model.Page;
@@ -53,7 +54,7 @@ public class YotsubaJSON extends YotsubaAbstract {
     }
 
     @Override
-    public Page getPage(int pageNum, String lastMod) throws ContentGetException, ContentParseException {
+    public Page getPage(int pageNum, String lastMod) throws ContentGetException, ContentParseException, CfBicClearParseException {
         String[] wgetReply = this.wgetText(this.linkPage(pageNum), lastMod);
         String pageText = wgetReply[0];
         String newLastMod = wgetReply[1];
@@ -84,7 +85,7 @@ public class YotsubaJSON extends YotsubaAbstract {
     }
 
     @Override
-    public Topic getThread(int threadNum, String lastMod) throws ContentGetException, ContentParseException {
+    public Topic getThread(int threadNum, String lastMod) throws ContentGetException, ContentParseException, CfBicClearParseException {
         String[] wgetReply = this.wgetText(this.linkThread(threadNum), lastMod);
         String threadText = wgetReply[0];
         String newLastMod = wgetReply[1];
@@ -122,7 +123,7 @@ public class YotsubaJSON extends YotsubaAbstract {
         return t;
     }
 
-    public Page getAllThreads(String lastMod) throws ContentGetException, ContentParseException {
+    public Page getAllThreads(String lastMod) throws ContentGetException, ContentParseException, CfBicClearParseException {
         String[] wgetReply = this.wgetText(this.linkThreads(), lastMod);
         String threadsText = wgetReply[0];
         String newLastMod = wgetReply[1];

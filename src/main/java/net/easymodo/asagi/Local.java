@@ -3,6 +3,7 @@ package net.easymodo.asagi;
 import com.google.common.io.ByteStreams;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
+import net.easymodo.asagi.exception.CfBicClearParseException;
 import net.easymodo.asagi.exception.ContentGetException;
 import net.easymodo.asagi.exception.ContentStoreException;
 import net.easymodo.asagi.exception.DBConnectionException;
@@ -187,15 +188,15 @@ public class Local extends Board {
         }
     }
 
-    public void insertMediaPreview(MediaPost h, Board source) throws ContentGetException, ContentStoreException {
+    public void insertMediaPreview(MediaPost h, Board source) throws ContentGetException, ContentStoreException, CfBicClearParseException {
         this.insertMedia(h, source, true);
     }
 
-    public void insertMedia(MediaPost h, Board source) throws ContentGetException, ContentStoreException {
+    public void insertMedia(MediaPost h, Board source) throws ContentGetException, ContentStoreException, CfBicClearParseException {
         this.insertMedia(h, source, false);
     }
 
-    public void insertMedia(MediaPost h, Board source, boolean isPreview) throws ContentGetException, ContentStoreException {
+    public void insertMedia(MediaPost h, Board source, boolean isPreview) throws ContentGetException, ContentStoreException, CfBicClearParseException {
         // Post has no media
         if((isPreview && h.getPreview() == null) || (!isPreview && h.getMedia() == null))
             return;

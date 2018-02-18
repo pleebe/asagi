@@ -1,5 +1,6 @@
 package net.easymodo.asagi;
 
+import net.easymodo.asagi.exception.CfBicClearParseException;
 import net.easymodo.asagi.exception.ContentGetException;
 import net.easymodo.asagi.exception.ContentParseException;
 import net.easymodo.asagi.exception.HttpGetException;
@@ -59,6 +60,10 @@ public class DumperJSON extends AbstractDumper {
                     sleepRemaining(startTime);
                     continue;
                 } catch(ContentParseException e) {
+                    debug(WARN, "Error parsing thread list: " + e.getMessage());
+                    sleepRemaining(startTime);
+                    continue;
+                } catch(CfBicClearParseException e) {
                     debug(WARN, "Error parsing thread list: " + e.getMessage());
                     sleepRemaining(startTime);
                     continue;

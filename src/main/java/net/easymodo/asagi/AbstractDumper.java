@@ -150,6 +150,9 @@ public abstract class AbstractDumper {
                 } catch(ContentStoreException e) {
                     debug(ERROR, "Couldn't save preview of post " +
                             mediaPrevPost.getNum() + ": " + e.getMessage());
+                } catch(CfBicClearParseException e) {
+                    debug(ERROR, "Couldn't save preview of post " +
+                            mediaPrevPost.getNum() + ": " + e.getMessage());
                 }
             }
         }
@@ -172,6 +175,9 @@ public abstract class AbstractDumper {
                     debug(ERROR, "Couldn't fetch media of post " +
                             mediaPost.getNum() + ": " + e.getMessage());
                 } catch(ContentStoreException e) {
+                    debug(ERROR, "Couldn't save media of post " +
+                            mediaPost.getNum() + ": " + e.getMessage());
+                } catch(CfBicClearParseException e) {
                     debug(ERROR, "Couldn't save media of post " +
                             mediaPost.getNum() + ": " + e.getMessage());
                 }
@@ -336,6 +342,10 @@ public abstract class AbstractDumper {
                    debug(WARN, newTopic + ": error: " + e.getMessage());
                    continue;
                } catch(ContentParseException e) {
+                   pingTopic(oldTopic);
+                   debug(ERROR, newTopic + ": " + e.getMessage());
+                   continue;
+               } catch(CfBicClearParseException e) {
                    pingTopic(oldTopic);
                    debug(ERROR, newTopic + ": " + e.getMessage());
                    continue;

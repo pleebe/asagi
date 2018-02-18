@@ -1,6 +1,7 @@
 package net.easymodo.asagi;
 
 import com.google.gson.*;
+import net.easymodo.asagi.exception.CfBicClearParseException;
 import net.easymodo.asagi.exception.ContentGetException;
 import net.easymodo.asagi.model.MediaPost;
 
@@ -56,7 +57,7 @@ public abstract class YotsubaAbstract extends WWW {
     }
 
     @Override
-    public InputStream getMediaPreview(MediaPost h) throws ContentGetException {
+    public InputStream getMediaPreview(MediaPost h) throws ContentGetException, CfBicClearParseException {
         if(h.getPreview() == null)
             return null;
 
@@ -64,7 +65,7 @@ public abstract class YotsubaAbstract extends WWW {
     }
 
     @Override
-    public InputStream getMedia(MediaPost h) throws ContentGetException {
+    public InputStream getMedia(MediaPost h) throws ContentGetException, CfBicClearParseException {
         if(h.getMedia() == null)
             return null;
 
