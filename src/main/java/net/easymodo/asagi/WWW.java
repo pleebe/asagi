@@ -21,6 +21,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.URLDecoder;
@@ -78,7 +79,7 @@ public abstract class WWW extends Board {
 
         String jschl_vc_pat = "name=\"jschl_vc\" \\s value=\"(.*?)\"";
         String pass_pat = "name=\"pass\" \\s value=\"(.*?)\"";
-        String jschl_answer_pat = "(var \\s s,t,o,p,b,r,e,a,k,i,n,g,f, \\s .*a\\.value \\s = \\s parseInt\\(.*?\\)) \\s \\+ \\s t\\.length;";
+        String jschl_answer_pat = "(var \\s s,t,o,p,b,r,e,a,k,i,n,g,f, \\s .*a\\.value \\s = \\s .*?\\.toFixed\\(10\\)) \\s \\+ \\s t\\.length;";
 
         jschl_vcPattern = Pattern.compile(jschl_vc_pat, Pattern.COMMENTS | Pattern.DOTALL);
         passPattern = Pattern.compile(pass_pat, Pattern.COMMENTS | Pattern.DOTALL);
@@ -156,7 +157,7 @@ public abstract class WWW extends Board {
                     }
                     String jschl_answer = mat.group(1);
 
-                    jschl_answer = jschl_answer.replaceAll("a\\.value = (parseInt\\(.*?\\))", "$1;");
+                    jschl_answer = jschl_answer.replaceAll("a\\.value = (.*?\\.toFixed\\(10\\))", "$1;");
                     jschl_answer = jschl_answer.replaceAll("t = document\\.createElement.*?;", "");
                     jschl_answer = jschl_answer.replaceAll("t\\.innerHTML=\"<a href='/'>x</a>\";", "");
                     jschl_answer = jschl_answer.replaceAll("t = t\\.firstChild\\.href;r = t.match\\(/https\\?:\\\\/\\\\//\\)\\[0\\];", "");
@@ -168,9 +169,9 @@ public abstract class WWW extends Board {
 
                     String[] args = {"node", "-e", jschl_answer};
                     jschl_answer = this.execCmd(args);
-                    Long number = Long.parseLong(jschl_answer.trim()) + req.getURI().getHost().length();
+                    BigDecimal number = new BigDecimal(jschl_answer.trim()).add(new BigDecimal(req.getURI().getHost().length()));
 
-                    Thread.sleep(4000);
+                    Thread.sleep(8000);
                     return this.wget(String.format("%s://%s/cdn-cgi/l/chk_jschl?jschl_vc=%s&pass=%s&jschl_answer=%s",
                             req.getURI().getScheme(), req.getURI().getHost(), jschl_vc, pass, number.toString()), referer);
                 } catch(IOException e) {
